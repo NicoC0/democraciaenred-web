@@ -43,5 +43,15 @@ module.exports = {
         redirect: false,
       },
     },
+    {
+      resolve: 'gatsby-source-storyblok',
+      options: {
+        accessToken: process.env.STORYBLOK_TOKEN,
+        version: process.env.STORYBLOK_VERSION,
+        region: process.env.STORYBLOK_REGION,
+        spaceId: process.env.STORYBLOK_SPACE_ID,
+        resolveRelations: ['post.author'],
+      }
+    }
   ],
 };

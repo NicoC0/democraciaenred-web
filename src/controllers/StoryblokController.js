@@ -1,140 +1,32 @@
-import { StoryblockService } from "../services/StoryblockService";
+import React from "react"
+import { useStaticQuery, graphql } from "gatsby"
+import { useStoryblokState } from "gatsby-source-storyblok"
 
-const storyblokInstance = StoryblockService();
+const StoryblokController = () => {
 
-export const getStories = async () => {
-    return await storyblokInstance.get('cdn/stories/', {
-        "starts_with": "blog/",
-        "version": process.env.STORYBLOK_VERSION,
-        "resolve_relations": ["post.author"]
-    })
-        .then(response => response.data.stories)
-        .catch(error => {
-            console.log(error)
-        })
-}
-export const getAuthors = async () => {
-
-    return await storyblokInstance.get('cdn/stories/', {
-        "starts_with": "authors/",
-        "version": process.env.STORYBLOK_VERSION,
-    })
-        .then(response => {
-            console.log(response.data.stories)
-            return response.data.stories
-        })
-        .catch(error => {
-            console.log(error)
-        })
-}
-export const getTags = async () => {
-    return await storyblokInstance.get(`cdn/tags`, {
-        version: process.env.STORYBLOK_VERSION,
-        starts_with: 'blog/'
-    })
-        .then((res) => res.data.tags)
-        .catch((err) => {
-            console.log(err)
-        })
-
-}
-export const getStoryByFullSlug = async (fullSlug) => {
-    return await storyblokInstance.get(`cdn/stories/${fullSlug}`, {
-        "version": process.env.STORYBLOK_VERSION,
-        "resolve_relations": ["post.author"]
-    })
-        .then((response) => { return response.data.story })
-        .catch((error) => { console.log(error); })
-}
-export const getFeaturedPosts = async (tags, uid, page) => {
-    const options = {
-        "starts_with": "blog/",
-        "version": process.env.STORYBLOK_VERSION,
-        "resolve_relations": ["post.author"],
-        "page": page,
-        "per_page": 3,
-        "with_tag": tags,
-        "filter_query": {
-            "_uid": {
-                "not_in": uid
-            }
+    const data = useStaticQuery(graphql`
+    {
+      posts: allStoryblokEntry(
+        filter: {field_component: {eq: "post"}}
+      ) {
+        edges {
+          node {
+            id
+            uuid
+            name
+            slug
+            full_slug
+            content
+            created_at
+          }
         }
+      }
     }
+  `)
 
-    return await storyblokInstance.get('cdn/stories/', { ...options })
-        .then(response => {
-            return response.data.stories
-        })
-        .catch(error => {
-            console.log(error)
-        })
+  let content = JSON.parse(data.posts.edges[0].node.content)
+  console.log(content.author.name)
+  return null
 }
 
-export const getSuggestedPosts = async (uid, page) => {
-    const options = {
-        "starts_with": "blog/",
-        "version": process.env.STORYBLOK_VERSION,
-        "resolve_relations": ["post.author"],
-        "page": page,
-        "per_page": 25,
-        "filter_query": {
-            "_uid": {
-                "not_in": uid
-            }
-        }
-    }
-
-    return await storyblokInstance.get('cdn/stories/', { ...options })
-        .then(response => {
-            return response.data.stories
-        })
-        .catch(error => {
-            console.log(error)
-        })
-}
-
-///functions yet to be implemented
-export const getStoriesByTags = async (tags) => {
-    const options = {
-        "starts_with": "blog/",
-        "version": process.env.STORYBLOK_VERSION,
-        "resolve_relations": ["post.author"],
-        "with_tag": tags
-    }
-
-    return await storyblokInstance.get('cdn/stories/', { ...options })
-        .then(response => {
-            console.log(response.data.stories)
-            return response.data.stories
-        })
-        .catch(error => {
-            console.log(error)
-        })
-}
-export const getCombinedFilterStories = async (query, tags) => {
-
-    if (tags.includes("todos")) { tags = '*' }
-    if (query === '') { query = '*' }
-
-    const options = {
-        "starts_with": "blog/",
-        "version": process.env.STORYBLOK_VERSION,
-        "resolve_relations": ["post.author"],
-        "with_tag": tags,
-        "filter_query": {
-            "post.author": {
-                "name": {
-                    "like": query
-                }
-            }
-        }
-    }
-    return await storyblokInstance.get('cdn/stories/', { ...options })
-        .then(response => {
-            console.log(response.data.stories)
-            return response.data.stories
-        })
-        .catch(error => {
-            console.log(error)
-        })
-}
+export default StoryblokController
