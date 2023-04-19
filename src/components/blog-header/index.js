@@ -12,7 +12,6 @@ const BlogHeader = ({ data, posts, tags }) => {
 
   useEffect(() => {
     const postsData = filterPosts()
-    console.log(postsData);
     setShowPosts(postsData)
   }, [authorSearch, filter, posts])
 
@@ -24,13 +23,13 @@ const BlogHeader = ({ data, posts, tags }) => {
     }
   }
   const handleTags = (tag) => {
-
     if (!filter.includes(tag)) {
       setFilter([...filter, tag])
       return null;
     }
     setFilter(filter.filter(ogTag => ogTag !== tag))
   }
+  
   const filterSearchBar = (e) => {
     if (e.target.value === '') {
       setAuthorSearch('')

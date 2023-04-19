@@ -5,7 +5,6 @@ import { dateParse } from '../../utils/DateParse'
 import { textClamp } from '../../utils/TextClamp'
 
 const BlogCards = ({ post }) => {
-
   return (
     <div className='column is-one-third'>
       <Link to={`/${post.full_slug}`}>
